@@ -2343,8 +2343,8 @@ int main() {
                 if (lastInput && data.startsWith(lastInput)) {
                     // 把那個重複的輸入值剪掉
                     data = data.substring(lastInput.length);
-                    // 把隨後跟著的換行符號也剪掉 (解決多餘換行問題)
-                    data = data.replace(/^\r\n/, '').replace(/^\n/, '');
+                    // 使用正規表達式，把開頭「所有」的換行符號 (\r 或 \n) 全部清空！
+                    data = data.replace(/^[\r\n]+/, '');
                     // 清空紀錄，避免誤刪真正的輸出
                     lastInput = ""; 
                 }
