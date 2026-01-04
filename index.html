@@ -2436,10 +2436,6 @@ int main() {
             lastInput = text;
             localStorage.setItem('galaxy_last_input', text);
             
-            const echo = document.createElement('span'); 
-            echo.className = 'terminal-input-echo animate-fade-in-up block whitespace-pre-wrap'; 
-            echo.innerText = text + '\n'; 
-            outputPre.appendChild(echo); 
             socket.emit('send_input', { input: text }); 
             inputField.value = ""; 
             terminalContainer.scrollTo({ top: terminalContainer.scrollHeight, behavior: 'smooth' }); 
