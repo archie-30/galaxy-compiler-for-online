@@ -187,7 +187,12 @@
         .terminal-note { color: #60a5fa; }
         .terminal-path { color: #a3a3a3; text-decoration: underline; }
         
-        #terminal-container { font-family: Consolas, monospace !important; scroll-behavior: smooth; }
+        #terminal-container { 
+            font-family: Consolas, monospace !important; 
+            scroll-behavior: smooth;
+            /* 新增這一行：上 右 下(改小) 左 */
+            padding: 16px 16px 2px 16px !important; 
+        }
         #terminal-input { font-family: Consolas, monospace !important; transition: border-color 0.2s; }
 
         .toggle-container-base { display: flex; background-color: #3c3c3c; border-radius: 6px; padding: 2px; position: relative; cursor: pointer; border: 1px solid #333; }
