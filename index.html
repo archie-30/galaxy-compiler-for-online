@@ -606,6 +606,17 @@
             cursor: not-allowed;
             pointer-events: none; /* 禁止重複點擊 */
         }
+        /* --- 這是步驟二新增的強制排隊設定 --- */
+        .terminal-output {
+            display: inline !important; /* 強制變成拼圖，不准換行 */
+        }
+
+        .terminal-input-echo {
+            display: inline !important; /* 輸入的綠色字也要變拼圖 */
+            color: #4ade80;             /* 綠色 */
+            font-weight: bold;          /* 粗體 */
+        }
+        /* ---------------------------------- */
     </style>
 </head>
 <body class="flex flex-col select-none overflow-hidden fixed inset-0 w-full h-full" data-theme="classic">
@@ -2337,26 +2348,30 @@ int main() {
             socket.on('program_output', (msg) => {
                 const loader = document.getElementById('compile-loader'); if (loader) loader.remove();
                 
-                // --- 【新增：防重複過濾器】 ---
                 let data = msg.data;
-                // 如果有剛剛輸入的紀錄 (lastInput)，且伺服器回傳的開頭就是這個輸入
+
+                // --- 【修復 1：過濾重複輸入】 ---
                 if (lastInput && data.startsWith(lastInput)) {
-                    // 把那個重複的輸入值剪掉
                     data = data.substring(lastInput.length);
-                    // 使用正規表達式，把開頭「所有」的換行符號 (\r 或 \n) 全部清空！
+                    // 這裡把開頭的換行也修剪乾淨
                     data = data.replace(/^[\r\n]+/, '');
-                    // 清空紀錄，避免誤刪真正的輸出
                     lastInput = ""; 
                 }
-                
-                // 如果剪完後沒東西了 (代表整句都是回音)，就直接結束，不顯示白色字
+
+                // --- 【修復 2：解決 cout<<endl 跳兩行的问题】 ---
+                // 這是關鍵！把所有的 \r (回車符) 刪掉，只保留 \n
+                // 這樣瀏覽器就不會笨笨的換兩次行了
+                data = data.replace(/\r/g, ''); 
+                // -------------------------------------------
+
                 if (!data) return;
-                // ---------------------------
 
                 const span = document.createElement('span'); 
-                span.className = 'terminal-output';
-                // 注意：這裡改成用處理過的 data
-                span.innerHTML = formatCompilerOutput(data);
+                span.className = 'terminal-output'; // 確保 CSS class 正確
+                
+                // 使用 innerText 而不是 innerHTML，這樣最安全且不會有奇怪的 <br> 標籤干擾
+                span.innerText = data; 
+                
                 outputPre.appendChild(span); 
                 requestAnimationFrame(() => {
                      terminalContainer.scrollTo({ top: terminalContainer.scrollHeight, behavior: 'auto' });
