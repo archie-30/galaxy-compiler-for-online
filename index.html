@@ -2336,9 +2336,27 @@ int main() {
             socket.on('disconnect', () => { if(statusDot) statusDot.className = "status-dot status-disconnected"; if(statusText) { statusText.innerText = "Disconnected"; statusText.className = "text-red-500 text-xs"; }});
             socket.on('program_output', (msg) => {
                 const loader = document.getElementById('compile-loader'); if (loader) loader.remove();
+                
+                // --- 【新增：防重複過濾器】 ---
+                let data = msg.data;
+                // 如果有剛剛輸入的紀錄 (lastInput)，且伺服器回傳的開頭就是這個輸入
+                if (lastInput && data.startsWith(lastInput)) {
+                    // 把那個重複的輸入值剪掉
+                    data = data.substring(lastInput.length);
+                    // 把隨後跟著的換行符號也剪掉 (解決多餘換行問題)
+                    data = data.replace(/^\r\n/, '').replace(/^\n/, '');
+                    // 清空紀錄，避免誤刪真正的輸出
+                    lastInput = ""; 
+                }
+                
+                // 如果剪完後沒東西了 (代表整句都是回音)，就直接結束，不顯示白色字
+                if (!data) return;
+                // ---------------------------
+
                 const span = document.createElement('span'); 
                 span.className = 'terminal-output';
-                span.innerHTML = formatCompilerOutput(msg.data);
+                // 注意：這裡改成用處理過的 data
+                span.innerHTML = formatCompilerOutput(data);
                 outputPre.appendChild(span); 
                 requestAnimationFrame(() => {
                      terminalContainer.scrollTo({ top: terminalContainer.scrollHeight, behavior: 'auto' });
