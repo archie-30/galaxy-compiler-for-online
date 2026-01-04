@@ -5,7 +5,7 @@ try:
 except ImportError:
     pass
 
-from flask import Flask, send_file, request, jsonify, session
+from flask import Flask, render_template, send_file, request, jsonify, session
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import subprocess
@@ -69,7 +69,7 @@ def kill_existing_process():
 
 @app.route('/')
 def home():
-    return send_file('index.html')
+    return render_template('compiler_general.html')
 
 @app.route('/register', methods=['POST'])
 def register():
