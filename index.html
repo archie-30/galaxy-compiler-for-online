@@ -2436,6 +2436,14 @@ int main() {
             lastInput = text;
             localStorage.setItem('galaxy_last_input', text);
             
+            // --- 【請把這段加回來，這是修正版】 ---
+            const echo = document.createElement('span'); 
+            // 注意：我拿掉了 'block' 這個字，這樣就不會亂多換一行了！
+            echo.className = 'terminal-input-echo animate-fade-in-up whitespace-pre-wrap'; 
+            echo.innerText = text + '\n'; 
+            outputPre.appendChild(echo); 
+            // ----------------------------------
+            
             socket.emit('send_input', { input: text }); 
             inputField.value = ""; 
             terminalContainer.scrollTo({ top: terminalContainer.scrollHeight, behavior: 'smooth' }); 
